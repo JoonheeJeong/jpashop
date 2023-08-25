@@ -62,6 +62,24 @@ class JpaMemberRepositoryTest {
         assertThat(all.get(1).getName()).isEqualTo("테스트2");
     }
 
+    @DisplayName("이름으로 목록 조회")
+    @Test
+    void whenFindAllByName_thenFound() {
+        // given
+        repository.save(newMember("테스트1"));
+        repository.save(newMember("테스트2"));
+
+        // when
+        final String keyword = "테스트";
+        List<Member> all = repository.findAllLikeName(keyword);
+
+        // then
+        assertThat(all).hasSize(2);
+        all.forEach(member ->
+                assertThat(member.getName())
+                        .contains(keyword));
+    }
+
     private static Member newMember(String name) {
         Address address = Address.builder()
                 .city("Daejeon")
