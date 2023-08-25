@@ -105,4 +105,23 @@ class MemberServiceTest {
                     assertThat(name).isEqualTo(expected);
                 });
     }
+
+    @DisplayName("회원 이름 패턴으로 목록 조회")
+    @Test
+    void whenGetMembersContainName_thenGotThem() {
+        // given
+        List<MemberRegisterDto> dtos = List.of(
+                new MemberRegisterDto("테스트유저1"),
+                new MemberRegisterDto("테스트회원"),
+                new MemberRegisterDto("테스트유저2"),
+                new MemberRegisterDto("스트레스")
+        );
+        dtos.forEach(sut::register);
+
+        // when, then
+        assertThat(sut.getMembersContainName("테스트")).hasSize(3);
+        assertThat(sut.getMembersContainName("회원")).hasSize(1);
+        assertThat(sut.getMembersContainName("유저")).hasSize(2);
+        assertThat(sut.getMembersContainName("스트")).hasSize(4);
+    }
 }
