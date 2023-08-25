@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,22 @@ class JpaMemberRepositoryTest {
 
         // then
         assertThat(byId).isEmpty();
+    }
+
+    @DisplayName("회원 목록 조회")
+    @Test
+    void given2MembersExist_whenFindAll_thenSize2() {
+        // given
+        repository.save(newMember("테스트1"));
+        repository.save(newMember("테스트2"));
+
+        // when
+        List<Member> all = repository.findAll();
+
+        // then
+        assertThat(all).hasSize(2);
+        assertThat(all.get(0).getName()).isEqualTo("테스트1");
+        assertThat(all.get(1).getName()).isEqualTo("테스트2");
     }
 
     private static Member newMember(String name) {
