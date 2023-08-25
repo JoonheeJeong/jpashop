@@ -38,4 +38,8 @@ public class MemberService {
     public List<Member> getAllMembers() {
         return memberRepository.findAll();
     }
+
+    public List<Member> getMembersContainName(String name) {
+        return memberRepository.findAllLikeName(name);
+    }
 }
