@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import jpabook.jpashop.service.MemberRegisterDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,4 +26,11 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private final List<Order> orders = new ArrayList<>();
+
+    public static Member from(MemberRegisterDto dto) {
+        return Member.builder()
+                .name(dto.getName())
+                .address(Address.from(dto))
+                .build();
+    }
 }
