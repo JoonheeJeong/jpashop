@@ -4,6 +4,7 @@ import jpabook.jpashop.domain.Member;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
@@ -37,5 +38,17 @@ public class JpaMemberRepository implements MemberRepository {
         final String pattern = "'%" + name + "%'";
         return em.createQuery("select m from Member m where m.name like " + pattern, Member.class)
                 .getResultList();
+    }
+
+    @Override
+    public Optional<Member> findByName(String name) {
+        try {
+            Member member = em.createQuery("select m from Member m where m.name=:name", Member.class)
+                    .setParameter("name", name)
+                    .getSingleResult();
+            return Optional.ofNullable(member);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }
