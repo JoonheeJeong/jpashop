@@ -31,4 +31,11 @@ public class JpaMemberRepository implements MemberRepository {
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }
+
+    @Override
+    public List<Member> findAllLikeName(String name) {
+        final String pattern = "'%" + name + "%'";
+        return em.createQuery("select m from Member m where m.name like " + pattern, Member.class)
+                .getResultList();
+    }
 }
