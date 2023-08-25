@@ -12,4 +12,6 @@ public interface MemberRepository {
     Optional<Member> findById(Long id);
 
     List<Member> findAll();
+
+    List<Member> findAllLikeName(String name);
 }
