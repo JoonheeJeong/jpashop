@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -78,5 +80,29 @@ class MemberServiceTest {
         // when, then
         assertThatThrownBy(() -> sut.getMember(id))
                 .isInstanceOf(NotFoundMemberException.class);
+    }
+    
+    @DisplayName("회원 목록 조회")
+    @Test
+    void whenGetAllMembers_thenGot() {
+        // given
+        List<MemberRegisterDto> dtos = List.of(
+                new MemberRegisterDto("테스트유저1"),
+                new MemberRegisterDto("테스트유저2"),
+                new MemberRegisterDto("테스트유저3")
+        );
+        dtos.forEach(sut::register);
+        
+        // when
+        List<Member> members = sut.getAllMembers();
+        
+        // then
+        assertThat(members).hasSize(dtos.size());
+        IntStream.range(0, dtos.size())
+                .forEach(i -> {
+                    String name = members.get(i).getName();
+                    String expected = dtos.get(i).getName();
+                    assertThat(name).isEqualTo(expected);
+                });
     }
 }
