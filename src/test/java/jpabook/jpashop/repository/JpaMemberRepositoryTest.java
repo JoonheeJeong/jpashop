@@ -23,7 +23,7 @@ class JpaMemberRepositoryTest {
     @Test
     void whenMemberSaved_thenItShouldBeFound() {
         // given
-        Member member = newMember();
+        Member member = newMember("정준희");
 
         // when
         Long id = repository.save(member);
@@ -45,14 +45,14 @@ class JpaMemberRepositoryTest {
         assertThat(byId).isEmpty();
     }
 
-    private static Member newMember() {
+    private static Member newMember(String name) {
         Address address = Address.builder()
                 .city("Daejeon")
                 .street("Daehak-ro")
                 .zipcode("34134")
                 .build();
         return Member.builder()
-                .name("정준희")
+                .name(name)
                 .address(address)
                 .build();
     }
