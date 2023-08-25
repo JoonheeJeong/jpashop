@@ -2,6 +2,7 @@ package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.exception.DuplicateMemberException;
+import jpabook.jpashop.exception.NotFoundMemberException;
 import jpabook.jpashop.repository.JpaMemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,5 +50,33 @@ class MemberServiceTest {
         MemberRegisterDto dto2 = new MemberRegisterDto("테스트유저");
         assertThatThrownBy(() -> sut.register(dto2))
                 .isInstanceOf(DuplicateMemberException.class);
+    }
+
+
+
+    @DisplayName("존재하는 회원 ID 조회")
+    @Test
+    void whenMemberExist_thenGotMember() {
+        // given
+        MemberRegisterDto dto = new MemberRegisterDto("테스트유저");
+        final Long id = sut.register(dto);
+
+        // when
+        Member member = sut.getMember(id);
+
+        // then
+        assertThat(member.getId()).isEqualTo(id);
+        assertThat(member.getName()).isEqualTo(dto.getName());
+    }
+
+    @DisplayName("존재하지 않는 회원 ID 조회")
+    @Test
+    void whenMemberNotExists_thenThrowsException() {
+        // given
+        final Long id = 1L;
+
+        // when, then
+        assertThatThrownBy(() -> sut.getMember(id))
+                .isInstanceOf(NotFoundMemberException.class);
     }
 }
