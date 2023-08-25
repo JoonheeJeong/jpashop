@@ -3,12 +3,14 @@ package jpabook.jpashop.repository;
 import jpabook.jpashop.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Repository
 public class JpaMemberRepository implements MemberRepository {
@@ -16,6 +18,7 @@ public class JpaMemberRepository implements MemberRepository {
     private final EntityManager em;
 
     @Override
+    @Transactional
     public void save(Member member) {
         em.persist(member);
     }
