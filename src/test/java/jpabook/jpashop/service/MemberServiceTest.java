@@ -54,8 +54,6 @@ class MemberServiceTest {
                 .isInstanceOf(DuplicateMemberException.class);
     }
 
-
-
     @DisplayName("존재하는 회원 ID 조회")
     @Test
     void whenMemberExist_thenGotMember() {
@@ -81,7 +79,7 @@ class MemberServiceTest {
         assertThatThrownBy(() -> sut.getMember(id))
                 .isInstanceOf(NotFoundMemberException.class);
     }
-    
+
     @DisplayName("회원 목록 조회")
     @Test
     void whenGetAllMembers_thenGot() {
@@ -92,10 +90,10 @@ class MemberServiceTest {
                 new MemberRegisterDto("테스트유저3")
         );
         dtos.forEach(sut::register);
-        
+
         // when
         List<Member> members = sut.getAllMembers();
-        
+
         // then
         assertThat(members).hasSize(dtos.size());
         IntStream.range(0, dtos.size())

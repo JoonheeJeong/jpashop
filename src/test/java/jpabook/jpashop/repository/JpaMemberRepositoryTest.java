@@ -80,17 +80,17 @@ class JpaMemberRepositoryTest {
                 assertThat(member.getName())
                         .contains(keyword));
     }
-    
+
     @DisplayName("존재하는 이름으로 조회")
     @Test
     void whenFindByExistingName_thenFound() {
         // given
         final String name = "안녕";
         repository.save(newMember(name));
-        
+
         // when
         Optional<Member> byName = repository.findByName(name);
-        
+
         // then
         assertThat(byName).isPresent();
         assertThat(byName.get().getName()).isEqualTo(name);
