@@ -7,6 +7,7 @@ import jpabook.jpashop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,5 +33,9 @@ public class MemberService {
     public Member getMember(Long id) {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundMemberException("해당 ID의 회원이 존재하지 않습니다."));
+    }
+
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
     }
 }
