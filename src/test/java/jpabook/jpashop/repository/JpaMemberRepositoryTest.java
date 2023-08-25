@@ -27,10 +27,11 @@ class JpaMemberRepositoryTest {
         Member member = newMember("정준희");
 
         // when
-        Long id = repository.save(member);
+        repository.save(member);
 
         // then
-        Optional<Member> byId = repository.findById(id);
+        assertThat(member.getId()).isNotNull();
+        Optional<Member> byId = repository.findById(member.getId());
         assertThat(byId).isPresent();
         Member foundMember = byId.get();
         assertThat(foundMember).isSameAs(member);
