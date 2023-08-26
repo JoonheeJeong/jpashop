@@ -70,12 +70,42 @@ class ItemServiceTest {
                 });
     }
 
+    @DisplayName("상품 수정")
+    @Test
+    void whenUpdate_thenUpdated() {
+        // given
+        BookRegisterDTO registerDto = newBookRegisterDTO("루터 선집", "마르틴 루터", "1234");
+        Long id = sut.register(registerDto);
+        Book book = (Book) repository.findById(id).get();
+
+        // when
+        BookUpdateDTO updateDto = newBookUpdateDTO(book, 9000, "11234");
+        Long idOfUpdatedBook = sut.update(updateDto);
+
+        // then
+        Book bookFound = (Book) repository.findById(idOfUpdatedBook).orElseThrow();
+        assertThat(book).isSameAs(bookFound);
+        assertThat(bookFound.getPrice()).isEqualTo(updateDto.getPrice());
+        assertThat(bookFound.getIsbn()).isEqualTo(updateDto.getIsbn());
+    }
+
     private BookRegisterDTO newBookRegisterDTO(String name, String author, String isbn) {
         return BookRegisterDTO.builder()
                 .name(name)
                 .price(10000)
                 .stackQuantity(10)
                 .author(author)
+                .isbn(isbn)
+                .build();
+    }
+
+    private BookUpdateDTO newBookUpdateDTO(Book book, int price, String isbn) {
+        return BookUpdateDTO.builder()
+                .id(book.getId())
+                .name(book.getName())
+                .price(price)
+                .stackQuantity(book.getStackQuantity())
+                .author(book.getAuthor())
                 .isbn(isbn)
                 .build();
     }
