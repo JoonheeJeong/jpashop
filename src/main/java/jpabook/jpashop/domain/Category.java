@@ -29,7 +29,7 @@ public class Category {
     private Category parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private final List<Category> children = new ArrayList<>();
+    private List<Category> children = new ArrayList<>();
 
     public void setParent(Category category) {
         parent = category;

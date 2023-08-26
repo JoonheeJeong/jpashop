@@ -25,7 +25,7 @@ public class Member {
     private Address address;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private final List<Order> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     public static Member from(MemberRegisterDto dto) {
         return Member.builder()

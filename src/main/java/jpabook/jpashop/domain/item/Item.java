@@ -22,7 +22,7 @@ public abstract class Item {
     private Integer stackQuantity;
 
     @ManyToMany(mappedBy = "items")
-    private final List<Category> categories = new ArrayList<>();
+    private List<Category> categories = new ArrayList<>();
 
     public void addCategory(Category category) {
         categories.add(category);

@@ -22,7 +22,7 @@ public class Order {
     private Member member;
 
     @OneToMany(mappedBy = "order")
-    private final List<OrderItem> orderItems = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "delivery_id")
