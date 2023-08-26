@@ -1,6 +1,7 @@
 package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.exception.NotFoundItemException;
 import jpabook.jpashop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,5 +24,12 @@ public class ItemService {
 
     public List<Item> getList() {
         return itemRepository.findAll();
+    }
+
+    public Long update(ItemUpdateDTO dto) {
+        Item item = itemRepository.findById(dto.getId())
+                .orElseThrow(() -> new NotFoundItemException("해당 id의 삼품을 찾을 수 없습니다."));
+        item.update(dto);
+        return item.getId();
     }
 }
