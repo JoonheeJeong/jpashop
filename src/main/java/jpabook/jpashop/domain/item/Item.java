@@ -1,7 +1,9 @@
 package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -9,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SuperBuilder
 @Getter
 @DiscriminatorColumn(name = "dtype")
