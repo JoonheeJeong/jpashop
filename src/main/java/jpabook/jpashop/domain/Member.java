@@ -24,6 +24,7 @@ public class Member {
     @Embedded
     private Address address;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 

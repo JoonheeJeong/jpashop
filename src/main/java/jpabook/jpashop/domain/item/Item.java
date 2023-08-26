@@ -2,6 +2,7 @@ package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -26,6 +27,7 @@ public abstract class Item {
     private Integer price;
     private Integer stackQuantity;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>();
 
