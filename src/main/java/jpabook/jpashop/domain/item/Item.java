@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
+import jpabook.jpashop.service.ItemUpdateDTO;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,5 +35,13 @@ public abstract class Item {
     public void addCategory(Category category) {
         categories.add(category);
         category.getItems().add(this);
+    }
+
+    public abstract void update(ItemUpdateDTO dto);
+
+    protected void updateBase(ItemUpdateDTO dto) {
+        name = dto.getName();
+        price = dto.getPrice();
+        stackQuantity = dto.getStackQuantity();
     }
 }
