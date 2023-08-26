@@ -2,26 +2,24 @@ package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 class JpaItemRepositoryTest {
-    
+
     @Autowired
     private ItemRepository repository;
-    
+
     @DisplayName("상품 저장")
     @Test
     void whenSaveItem_thenShouldBeFound() {
@@ -45,7 +43,26 @@ class JpaItemRepositoryTest {
         assertThat(foundBook.getAuthor()).isEqualTo(author);
         assertThat(foundBook.getIsbn()).isEqualTo(isbn);
     }
-    
+
+    @DisplayName("상품 전체 조회")
+    @Test
+    void when3ItemsExists_thenFoundAll() {
+        // given
+        List<Book> books = List.of(
+                newBook("루터 선집", "마르틴 루터", "1234"),
+                newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
+                newBook("순전한 기독교", "C. S. 루이스", "1236")
+        );
+        books.forEach(repository::save);
+
+        // when
+        List<Item> all = repository.findAll();
+
+        // then
+        assertThat(all).hasSize(3);
+        assertThat(all).isEqualTo(books);
+    }
+
     private Book newBook(String name, String author, String isbn) {
         return Book.builder()
                 .name(name)
@@ -55,5 +72,4 @@ class JpaItemRepositoryTest {
                 .stackQuantity(10)
                 .build();
     }
-
 }
