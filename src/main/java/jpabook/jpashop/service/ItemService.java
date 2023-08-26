@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -17,5 +19,9 @@ public class ItemService {
         Item item = dto.toItem();
         itemRepository.save(item);
         return item.getId();
+    }
+
+    public List<Item> getList() {
+        return itemRepository.findAll();
     }
 }
