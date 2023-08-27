@@ -1,10 +1,13 @@
 package jpabook.jpashop.domain;
 
 import jpabook.jpashop.domain.item.Item;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 @Entity
 public class OrderItem {
