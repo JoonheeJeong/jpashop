@@ -1,7 +1,7 @@
 package jpabook.jpashop.repository;
 
-import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.utils.MemberUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ class JpaMemberRepositoryTest {
     @Test
     void whenMemberSaved_thenItShouldBeFound() {
         // given
-        Member member = newMember("정준희");
+        Member member = MemberUtil.newMember("정준희");
 
         // when
         repository.save(member);
@@ -51,8 +51,8 @@ class JpaMemberRepositoryTest {
     @Test
     void given2MembersExist_whenFindAll_thenSize2() {
         // given
-        repository.save(newMember("테스트1"));
-        repository.save(newMember("테스트2"));
+        repository.save(MemberUtil.newMember("테스트1"));
+        repository.save(MemberUtil.newMember("테스트2"));
 
         // when
         List<Member> all = repository.findAll();
@@ -67,8 +67,8 @@ class JpaMemberRepositoryTest {
     @Test
     void whenFindAllByName_thenFound() {
         // given
-        repository.save(newMember("테스트1"));
-        repository.save(newMember("테스트2"));
+        repository.save(MemberUtil.newMember("테스트1"));
+        repository.save(MemberUtil.newMember("테스트2"));
 
         // when
         final String keyword = "테스트";
@@ -86,7 +86,7 @@ class JpaMemberRepositoryTest {
     void whenFindByExistingName_thenFound() {
         // given
         final String name = "안녕";
-        repository.save(newMember(name));
+        repository.save(MemberUtil.newMember(name));
 
         // when
         Optional<Member> byName = repository.findByName(name);
@@ -107,17 +107,5 @@ class JpaMemberRepositoryTest {
 
         // then
         assertThat(byName).isEmpty();
-    }
-
-    private static Member newMember(String name) {
-        Address address = Address.builder()
-                .city("Daejeon")
-                .street("Daehak-ro")
-                .zipcode("34134")
-                .build();
-        return Member.builder()
-                .name(name)
-                .address(address)
-                .build();
     }
 }
