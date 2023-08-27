@@ -1,13 +1,17 @@
 package jpabook.jpashop.domain;
 
 import jpabook.jpashop.domain.type.OrderStatus;
-import lombok.Getter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
 @Table(name = "orders")
 @Entity
@@ -21,6 +25,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -28,10 +33,12 @@ public class Order {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
+    @CreationTimestamp
     private LocalDateTime time;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus status = OrderStatus.ORDER;
 
     public void setMember(Member member) {
         this.member = member;
