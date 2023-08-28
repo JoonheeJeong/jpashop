@@ -1,0 +1,74 @@
+package jpabook.jpashop.service;
+
+import jpabook.jpashop.domain.Delivery;
+import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderItem;
+import jpabook.jpashop.domain.item.Item;
+import jpabook.jpashop.exception.NotFoundItemException;
+import jpabook.jpashop.exception.NotFoundMemberException;
+import jpabook.jpashop.repository.ItemRepository;
+import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor
+@Service
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+    private final MemberRepository memberRepository;
+    private final ItemRepository itemRepository;
+
+    @Transactional
+    public Long order(OrderRequestDTO dto) {
+        Member member = getMember(dto);
+
+        List<Item> items = getItems(dto.getItemIds());
+        List<Integer> quantities = dto.getQuantities();
+
+        Delivery delivery = new Delivery(member.getAddress());
+
+        Order order = Order.builder()
+                .member(member)
+                .delivery(delivery)
+                .build();
+
+        int size = items.size();
+        for (int i = 0; i < size; ++i) {
+            Item item = items.get(i);
+            int quantity = quantities.get(i);
+
+            item.consumeStock(quantity);
+
+            OrderItem orderItem = OrderItem.builder()
+                    .item(item)
+                    .totalPrice(item.getPrice() * quantity)
+                    .quantity(quantity)
+                    .build();
+
+            order.addOrderItems(orderItem);
+        }
+
+        orderRepository.save(order);
+
+        return order.getId();
+    }
+
+    private List<Item> getItems(List<Long> itemIds) {
+        return itemIds.stream()
+                .map(itemRepository::findById)
+                .map(byId -> byId.orElseThrow(NotFoundItemException::new))
+                .collect(Collectors.toList());
+    }
+
+    private Member getMember(OrderRequestDTO dto) {
+        return memberRepository.findById(dto.getMemberId())
+                .orElseThrow(NotFoundMemberException::new);
+    }
+}
