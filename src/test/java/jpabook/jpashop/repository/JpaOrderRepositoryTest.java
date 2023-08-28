@@ -65,4 +65,36 @@ class JpaOrderRepositoryTest {
         IntStream.range(0, orderItems.length)
                 .forEach(i -> assertThat(orderItems[i]).isEqualTo(foundOrderItems.get(i)));
     }
+
+    @DisplayName("주문 전체 조회")
+    @Test
+    void whenFindAll_thenFoundThem() {
+        // given
+        Member member = MemberUtil.newMember("정준희");
+        memberRepository.save(member);
+
+        List<Book> books = List.of(
+                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
+                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
+                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
+        );
+        books.forEach(itemRepository::save);
+
+        OrderItem[] orderItems1 = List.of(
+                OrderItemUtil.newOrderItem(books.get(0), 2)).toArray(OrderItem[]::new);
+        OrderItem[] orderItems2 = List.of(
+                OrderItemUtil.newOrderItem(books.get(1), 3),
+                OrderItemUtil.newOrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
+        List<Order> orders = List.of(
+                OrderUtil.newOrder(member, orderItems1),
+                OrderUtil.newOrder(member, orderItems2));
+        orders.forEach(orderRepository::save);
+
+        // when
+        List<Order> ordersFound = orderRepository.findAll();
+
+        // then
+        assertThat(ordersFound).hasSize(orders.size());
+        assertThat(ordersFound).isEqualTo(orders);
+    }
 }
