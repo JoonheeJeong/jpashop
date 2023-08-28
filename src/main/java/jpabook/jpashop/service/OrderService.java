@@ -11,6 +11,7 @@ import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +41,7 @@ public class OrderService {
 
             item.consumeStock(quantity);
 
-            orderItems[i] = OrderItem.builder()
-                    .item(item)
-                    .totalPrice(item.getPrice() * quantity)
-                    .quantity(quantity)
-                    .build();
+            orderItems[i] = new OrderItem(item, quantity);
         }
 
         Order order = new Order(member, orderItems);

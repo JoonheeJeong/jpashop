@@ -6,8 +6,6 @@ import lombok.*;
 import javax.persistence.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Entity
 public class OrderItem {
@@ -26,6 +24,16 @@ public class OrderItem {
 
     private int totalPrice;
     private int quantity;
+
+    public OrderItem(Item item, int quantity) {
+        this(item, item.getPrice() * quantity, quantity);
+    }
+
+    public OrderItem(Item item, int orderPrice, int quantity) {
+        this.item = item;
+        this.totalPrice = orderPrice * quantity;
+        this.quantity = quantity;
+    }
 
     public void setOrder(Order order) {
         this.order = order;

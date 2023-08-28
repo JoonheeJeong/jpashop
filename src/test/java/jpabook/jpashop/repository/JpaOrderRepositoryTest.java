@@ -6,7 +6,6 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.utils.ItemUtil;
 import jpabook.jpashop.utils.MemberUtil;
-import jpabook.jpashop.utils.OrderItemUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +44,9 @@ class JpaOrderRepositoryTest {
         books.forEach(itemRepository::save);
 
         OrderItem[] orderItems = List.of(
-                OrderItemUtil.newOrderItem(books.get(0), 2),
-                OrderItemUtil.newOrderItem(books.get(1), 3),
-                OrderItemUtil.newOrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
+                new OrderItem(books.get(0), 2),
+                new OrderItem(books.get(1), 3),
+                new OrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
         Order order = new Order(member, orderItems);
 
         // when
@@ -80,10 +79,10 @@ class JpaOrderRepositoryTest {
         books.forEach(itemRepository::save);
 
         OrderItem[] orderItems1 = List.of(
-                OrderItemUtil.newOrderItem(books.get(0), 2)).toArray(OrderItem[]::new);
+                new OrderItem(books.get(0), 2)).toArray(OrderItem[]::new);
         OrderItem[] orderItems2 = List.of(
-                OrderItemUtil.newOrderItem(books.get(1), 3),
-                OrderItemUtil.newOrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
+                new OrderItem(books.get(1), 3),
+                new OrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
         List<Order> orders = List.of(
                 new Order(member, orderItems1),
                 new Order(member, orderItems2));
