@@ -22,17 +22,21 @@ public class OrderItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private int totalPrice;
+    private int orderPrice;
     private int quantity;
 
+    @Transient
+    private int totalPrice;
+
     public OrderItem(Item item, int quantity) {
-        this(item, item.getPrice() * quantity, quantity);
+        this(item, item.getPrice(), quantity);
     }
 
     public OrderItem(Item item, int orderPrice, int quantity) {
         this.item = item;
-        this.totalPrice = orderPrice * quantity;
+        this.orderPrice = orderPrice;
         this.quantity = quantity;
+        this.totalPrice = orderPrice * quantity;
     }
 
     public void setOrder(Order order) {
