@@ -28,7 +28,7 @@ public class ItemService {
 
     public Long update(ItemUpdateDTO dto) {
         Item item = itemRepository.findById(dto.getId())
-                .orElseThrow(() -> new NotFoundItemException("해당 id의 삼품을 찾을 수 없습니다."));
+                .orElseThrow(NotFoundItemException::new);
         item.update(dto);
         return item.getId();
     }

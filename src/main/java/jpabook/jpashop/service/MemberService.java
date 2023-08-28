@@ -26,13 +26,13 @@ public class MemberService {
     private void validateDuplicateName(String name) {
         Optional<Member> byName = memberRepository.findByName(name);
         if (byName.isPresent()) {
-            throw new DuplicateMemberException("이미 존재하는 회원 이름입니다.");
+            throw new DuplicateMemberException();
         }
     }
 
     public Member getMember(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundMemberException("해당 ID의 회원이 존재하지 않습니다."));
+                .orElseThrow(NotFoundMemberException::new);
     }
 
     public List<Member> getAllMembers() {
