@@ -6,6 +6,7 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.domain.type.OrderStatus;
+import jpabook.jpashop.exception.AlreadyDeliveredException;
 import jpabook.jpashop.exception.NotEnoughItemStock;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.repository.MemberRepository;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -114,6 +116,26 @@ class OrderServiceTest {
         // when, then
         assertThatThrownBy(() -> orderService.order(dto))
                 .isInstanceOf(NotEnoughItemStock.class);
+    }
+
+    @DisplayName("배송 시작 후 주문 취소 불가")
+    @Test
+    void whenCancelDeliveredOrder_thenThrows() {
+        // given
+        Member member = newMember();
+        List<Book> books = newBooks();
+        List<Long> itemIds = getItemIds(books);
+        List<Integer> quantities = Collections.nCopies(books.size(), 1);
+        OrderRequestDTO dto = new OrderRequestDTO(member.getId(), itemIds, quantities);
+
+        Long orderId = orderService.order(dto);
+
+        Order order = orderRepository.findById(orderId).orElseThrow();
+        order.getDelivery().delivered();
+
+        // when, then
+        assertThatThrownBy(() -> orderService.cancelOrder(orderId))
+                .isInstanceOf(AlreadyDeliveredException.class);
     }
 
     private Member newMember() {
