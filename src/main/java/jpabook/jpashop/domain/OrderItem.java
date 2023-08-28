@@ -28,6 +28,10 @@ public class OrderItem {
     @Transient
     private int totalPrice;
 
+    public OrderItem(Item item) {
+        this(item, item.getPrice(), 1);
+    }
+
     public OrderItem(Item item, int quantity) {
         this(item, item.getPrice(), quantity);
     }

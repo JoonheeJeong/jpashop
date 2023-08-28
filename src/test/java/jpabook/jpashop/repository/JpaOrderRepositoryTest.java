@@ -33,20 +33,11 @@ class JpaOrderRepositoryTest {
     @Test
     void whenSaveOrder_thenShouldBeFound() {
         // given
-        Member member = MemberUtil.newMember("정준희");
-        memberRepository.save(member);
-
-        List<Book> books = List.of(
-                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
-                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
-                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
-        );
-        books.forEach(itemRepository::save);
-
-        OrderItem[] orderItems = List.of(
-                new OrderItem(books.get(0), 2),
-                new OrderItem(books.get(1), 3),
-                new OrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
+        Member member = newMember("정준희");
+        List<Book> books = newBooks();
+        OrderItem[] orderItems = books.stream()
+                .map(OrderItem::new)
+                .toArray(OrderItem[]::new);
         Order order = new Order(member, orderItems);
 
         // when
@@ -68,24 +59,21 @@ class JpaOrderRepositoryTest {
     @Test
     void whenFindAll_thenFoundThem() {
         // given
-        Member member = MemberUtil.newMember("정준희");
-        memberRepository.save(member);
-
-        List<Book> books = List.of(
-                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
-                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
-                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
-        );
-        books.forEach(itemRepository::save);
-
+        Member member1 = newMember("정준희");
+        Member member2 = newMember("희준정");
+        List<Book> books = newBooks();
         OrderItem[] orderItems1 = List.of(
-                new OrderItem(books.get(0), 2)).toArray(OrderItem[]::new);
+                new OrderItem(books.get(0))).toArray(OrderItem[]::new);
         OrderItem[] orderItems2 = List.of(
-                new OrderItem(books.get(1), 3),
-                new OrderItem(books.get(2), 1)).toArray(OrderItem[]::new);
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(2))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems3 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(3))).toArray(OrderItem[]::new);
         List<Order> orders = List.of(
-                new Order(member, orderItems1),
-                new Order(member, orderItems2));
+                new Order(member1, orderItems1),
+                new Order(member1, orderItems2),
+                new Order(member2, orderItems3));
         orders.forEach(orderRepository::save);
 
         // when
@@ -94,5 +82,21 @@ class JpaOrderRepositoryTest {
         // then
         assertThat(ordersFound).hasSize(orders.size());
         assertThat(ordersFound).isEqualTo(orders);
+    }
+
+    private List<Book> newBooks() {
+        List<Book> books = List.of(
+                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
+                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
+                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236"),
+                ItemUtil.newBook("내면소통", "김주환", "1237"));
+        books.forEach(itemRepository::save);
+        return books;
+    }
+
+    private Member newMember(String name) {
+        Member member = MemberUtil.newMember(name);
+        memberRepository.save(member);
+        return member;
     }
 }
