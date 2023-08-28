@@ -6,6 +6,7 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.domain.type.OrderStatus;
+import jpabook.jpashop.exception.NotEnoughItemStock;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -122,5 +124,28 @@ class OrderServiceTest {
                     Integer expected = stockQuantitiesOriginal.get(i);
                     assertThat(stockQuantity).isEqualTo(expected);
                 });
+    }
+
+    @DisplayName("상품 주문 재고 수량 초과")
+    @Test
+    void whenOrderOverStock_thenThrows() {
+        // given
+        Member member = MemberUtil.newMember("정준희");
+        memberRepository.save(member);
+
+        List<Book> books = List.of(ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"));
+        books.forEach(itemRepository::save);
+
+        List<Long> itemIds = books.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+        List<Integer> quantities = books.stream()
+                .map(item -> item.getStockQuantity() + 1)
+                .collect(Collectors.toList());
+        OrderRequestDTO dto = new OrderRequestDTO(member.getId(), itemIds, quantities);
+
+        // when, then
+        assertThatThrownBy(() -> orderService.order(dto))
+                .isInstanceOf(NotEnoughItemStock.class);
     }
 }
