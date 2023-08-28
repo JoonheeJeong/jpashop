@@ -1,17 +1,19 @@
 package jpabook.jpashop.domain;
 
 import jpabook.jpashop.domain.type.OrderStatus;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Table(name = "orders")
 @Entity
@@ -25,7 +27,6 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -36,21 +37,30 @@ public class Order {
     @CreationTimestamp
     private LocalDateTime time;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.ORDER;
 
-    public void setMember(Member member) {
+    public Order(Member member, @NonNull OrderItem... orderItems) {
+        this(member, new Delivery(member.getAddress()), orderItems);
+    }
+
+    public Order(Member member, Delivery delivery, @NonNull OrderItem... orderItems) {
+        setMember(member);
+        setDelivery(delivery);
+        Arrays.stream(orderItems).forEach(this::addOrderItems);
+    }
+
+    private void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
     }
 
-    public void addOrderItems(OrderItem orderItem) {
+    private void addOrderItems(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public void setDelivery(Delivery delivery) {
+    private void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
     }

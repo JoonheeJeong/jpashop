@@ -32,28 +32,22 @@ public class OrderService {
         List<Item> items = getItems(dto.getItemIds());
         List<Integer> quantities = dto.getQuantities();
 
-        Delivery delivery = new Delivery(member.getAddress());
-
-        Order order = Order.builder()
-                .member(member)
-                .delivery(delivery)
-                .build();
-
         int size = items.size();
+        OrderItem[] orderItems = new OrderItem[size];
         for (int i = 0; i < size; ++i) {
             Item item = items.get(i);
             int quantity = quantities.get(i);
 
             item.consumeStock(quantity);
 
-            OrderItem orderItem = OrderItem.builder()
+            orderItems[i] = OrderItem.builder()
                     .item(item)
                     .totalPrice(item.getPrice() * quantity)
                     .quantity(quantity)
                     .build();
-
-            order.addOrderItems(orderItem);
         }
+
+        Order order = new Order(member, orderItems);
 
         orderRepository.save(order);
 
