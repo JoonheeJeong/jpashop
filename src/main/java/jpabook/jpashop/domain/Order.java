@@ -1,6 +1,8 @@
 package jpabook.jpashop.domain;
 
+import jpabook.jpashop.domain.type.DeliveryStatus;
 import jpabook.jpashop.domain.type.OrderStatus;
+import jpabook.jpashop.exception.AlreadyDeliveredException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,6 +68,10 @@ public class Order {
     }
 
     public void cancel() {
+        if (delivery.getStatus() == DeliveryStatus.DELIVERED) {
+            throw new AlreadyDeliveredException();
+        }
+
         status = OrderStatus.CANCEL;
         orderItems.forEach(OrderItem::cancel);
     }
