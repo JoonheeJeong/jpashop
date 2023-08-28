@@ -4,6 +4,7 @@ import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Book;
+import jpabook.jpashop.domain.type.OrderStatus;
 import jpabook.jpashop.utils.ItemUtil;
 import jpabook.jpashop.utils.MemberUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -77,11 +78,108 @@ class JpaOrderRepositoryTest {
         orders.forEach(orderRepository::save);
 
         // when
-        List<Order> ordersFound = orderRepository.findAll();
+        List<Order> ordersFound = orderRepository.findAllByLikeNameAndStatus(new OrderSearchCond());
 
         // then
         assertThat(ordersFound).hasSize(orders.size());
         assertThat(ordersFound).isEqualTo(orders);
+    }
+
+    @DisplayName("주문 회원명으로 조회")
+    @Test
+    void whenFindOrderByLikeName_thenFoundThem() {
+        // given
+        Member member1 = newMember("정준희");
+        Member member2 = newMember("희준정");
+        List<Book> books = newBooks();
+        OrderItem[] orderItems1 = List.of(
+                new OrderItem(books.get(0))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems2 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(2))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems3 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(3))).toArray(OrderItem[]::new);
+        List<Order> orders = List.of(
+                new Order(member1, orderItems1),
+                new Order(member1, orderItems2),
+                new Order(member2, orderItems3));
+        orders.forEach(orderRepository::save);
+
+        OrderSearchCond cond = new OrderSearchCond("준희");
+
+        // when
+        List<Order> ordersFound = orderRepository.findAllByLikeNameAndStatus(cond);
+
+        // then
+        assertThat(ordersFound).hasSize(2);
+        assertThat(ordersFound).isEqualTo(List.of(orders.get(0), orders.get(1)));
+    }
+
+    @DisplayName("주문 상태로 조회")
+    @Test
+    void whenFindOrderByStatus_thenFoundThem() {
+        // given
+        Member member1 = newMember("정준희");
+        Member member2 = newMember("희준정");
+        List<Book> books = newBooks();
+        OrderItem[] orderItems1 = List.of(
+                new OrderItem(books.get(0))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems2 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(2))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems3 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(3))).toArray(OrderItem[]::new);
+        List<Order> orders = List.of(
+                new Order(member1, orderItems1),
+                new Order(member1, orderItems2),
+                new Order(member2, orderItems3));
+        orders.forEach(orderRepository::save);
+
+        orders.get(1).cancel();
+
+        OrderSearchCond cond = new OrderSearchCond(OrderStatus.CANCEL);
+
+        // when
+        List<Order> ordersFound = orderRepository.findAllByLikeNameAndStatus(cond);
+
+        // then
+        assertThat(ordersFound).hasSize(1);
+        assertThat(ordersFound).isEqualTo(List.of(orders.get(1)));
+    }
+
+    @DisplayName("주문 회원명과 상태로 조회")
+    @Test
+    void whenFindOrderByLikeNameAndStatus_thenFoundThem() {
+        // given
+        Member member1 = newMember("정준희");
+        Member member2 = newMember("희준정");
+        List<Book> books = newBooks();
+        OrderItem[] orderItems1 = List.of(
+                new OrderItem(books.get(0))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems2 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(2))).toArray(OrderItem[]::new);
+        OrderItem[] orderItems3 = List.of(
+                new OrderItem(books.get(1)),
+                new OrderItem(books.get(3))).toArray(OrderItem[]::new);
+        List<Order> orders = List.of(
+                new Order(member1, orderItems1),
+                new Order(member1, orderItems2),
+                new Order(member2, orderItems3));
+        orders.forEach(orderRepository::save);
+
+        orders.get(1).cancel();
+
+        OrderSearchCond cond = new OrderSearchCond("준희", OrderStatus.ORDER);
+
+        // when
+        List<Order> ordersFound = orderRepository.findAllByLikeNameAndStatus(cond);
+
+        // then
+        assertThat(ordersFound).hasSize(1);
+        assertThat(ordersFound).isEqualTo(List.of(orders.get(0)));
     }
 
     private List<Book> newBooks() {
