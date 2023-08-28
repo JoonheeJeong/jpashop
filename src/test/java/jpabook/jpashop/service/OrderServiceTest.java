@@ -19,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -43,22 +42,10 @@ class OrderServiceTest {
     @Test
     void whenOrderItems_thenFoundAndStockConsumed() {
         // given
-        Member member = MemberUtil.newMember("정준희");
-        memberRepository.save(member);
-
-        List<Book> books = List.of(
-                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
-                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
-                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
-        );
-        List<Integer> stockQuantitiesOriginal = books.stream()
-                .map(Item::getStockQuantity)
-                .collect(Collectors.toList());
-        books.forEach(itemRepository::save);
-
-        List<Long> itemIds = books.stream()
-                .map(Item::getId)
-                .collect(Collectors.toList());
+        Member member = newMember();
+        List<Book> books = newBooks();
+        List<Integer> stockQuantitiesOriginal = getStockQuantities(books);
+        List<Long> itemIds = getItemIds(books);
         List<Integer> quantities = List.of(2, 3, 1);
         OrderRequestDTO dto = new OrderRequestDTO(member.getId(), itemIds, quantities);
 
@@ -66,9 +53,7 @@ class OrderServiceTest {
         Long orderId = orderService.order(dto);
 
         // then
-        Optional<Order> byId = orderRepository.findById(orderId);
-        assertThat(byId).isPresent();
-        Order orderFound = byId.get();
+        Order orderFound = orderRepository.findById(orderId).orElseThrow();
 
         assertThat(orderFound.getMember()).isSameAs(member);
 
@@ -89,22 +74,10 @@ class OrderServiceTest {
     @Test
     void whenCancelOrder_thenStatusCancelledAndStockRestored() {
         // given
-        Member member = MemberUtil.newMember("정준희");
-        memberRepository.save(member);
-
-        List<Book> books = List.of(
-                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
-                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
-                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
-        );
-        List<Integer> stockQuantitiesOriginal = books.stream()
-                .map(Item::getStockQuantity)
-                .collect(Collectors.toList());
-        books.forEach(itemRepository::save);
-
-        List<Long> itemIds = books.stream()
-                .map(Item::getId)
-                .collect(Collectors.toList());
+        Member member = newMember();
+        List<Book> books = newBooks();
+        List<Integer> stockQuantitiesOriginal = getStockQuantities(books);
+        List<Long> itemIds = getItemIds(books);
         List<Integer> quantities = List.of(2, 3, 1);
         OrderRequestDTO dto = new OrderRequestDTO(member.getId(), itemIds, quantities);
 
@@ -130,15 +103,9 @@ class OrderServiceTest {
     @Test
     void whenOrderOverStock_thenThrows() {
         // given
-        Member member = MemberUtil.newMember("정준희");
-        memberRepository.save(member);
-
-        List<Book> books = List.of(ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"));
-        books.forEach(itemRepository::save);
-
-        List<Long> itemIds = books.stream()
-                .map(Item::getId)
-                .collect(Collectors.toList());
+        Member member = newMember();
+        List<Book> books = newBooks();
+        List<Long> itemIds = getItemIds(books);
         List<Integer> quantities = books.stream()
                 .map(item -> item.getStockQuantity() + 1)
                 .collect(Collectors.toList());
@@ -147,5 +114,33 @@ class OrderServiceTest {
         // when, then
         assertThatThrownBy(() -> orderService.order(dto))
                 .isInstanceOf(NotEnoughItemStock.class);
+    }
+
+    private Member newMember() {
+        Member member = MemberUtil.newMember("정준희");
+        memberRepository.save(member);
+        return member;
+    }
+
+    private List<Book> newBooks() {
+        List<Book> books = List.of(
+                ItemUtil.newBook("루터 선집", "마르틴 루터", "1234"),
+                ItemUtil.newBook("이방인의 염려", "쇠얀 케르케고르", "1235"),
+                ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
+        );
+        books.forEach(itemRepository::save);
+        return books;
+    }
+
+    private static List<Integer> getStockQuantities(List<Book> books) {
+        return books.stream()
+                .map(Item::getStockQuantity)
+                .collect(Collectors.toList());
+    }
+
+    private static List<Long> getItemIds(List<Book> books) {
+        return books.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
     }
 }
