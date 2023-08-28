@@ -1,23 +1,23 @@
 package jpabook.jpashop.service;
 
-import jpabook.jpashop.domain.Delivery;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.exception.NotFoundItemException;
 import jpabook.jpashop.exception.NotFoundMemberException;
+import jpabook.jpashop.exception.NotFoundOrderException;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -26,7 +26,6 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
-    @Transactional
     public Long order(OrderRequestDTO dto) {
         Member member = getMember(dto);
 
@@ -61,5 +60,15 @@ public class OrderService {
     private Member getMember(OrderRequestDTO dto) {
         return memberRepository.findById(dto.getMemberId())
                 .orElseThrow(NotFoundMemberException::new);
+    }
+
+    public void cancelOrder(Long orderId) {
+        Order order = getOrder(orderId);
+        order.cancel();
+    }
+
+    private Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(NotFoundOrderException::new);
     }
 }
