@@ -64,4 +64,9 @@ public class Order {
         this.delivery = delivery;
         delivery.setOrder(this);
     }
+
+    public void cancel() {
+        status = OrderStatus.CANCEL;
+        orderItems.forEach(OrderItem::cancel);
+    }
 }

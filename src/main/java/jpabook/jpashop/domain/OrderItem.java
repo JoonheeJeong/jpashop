@@ -42,4 +42,8 @@ public class OrderItem {
     public void setOrder(Order order) {
         this.order = order;
     }
+
+    public void cancel() {
+        item.restoreStock(quantity);
+    }
 }

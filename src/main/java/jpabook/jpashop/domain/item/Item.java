@@ -53,4 +53,8 @@ public abstract class Item {
         }
         stockQuantity = newStockQuantity;
     }
+
+    public void restoreStock(int quantity) {
+        stockQuantity += quantity;
+    }
 }
