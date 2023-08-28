@@ -17,7 +17,7 @@ public class BookRegisterDTO extends ItemRegisterDTO {
         return Book.builder()
                 .name(getName())
                 .price(getPrice())
-                .stackQuantity(getStackQuantity())
+                .stockQuantity(getStackQuantity())
                 .author(author)
                 .isbn(isbn)
                 .build();

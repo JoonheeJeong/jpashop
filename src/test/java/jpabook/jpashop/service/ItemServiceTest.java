@@ -104,7 +104,7 @@ class ItemServiceTest {
                 .id(book.getId())
                 .name(book.getName())
                 .price(price)
-                .stackQuantity(book.getStackQuantity())
+                .stackQuantity(book.getStockQuantity())
                 .author(book.getAuthor())
                 .isbn(isbn)
                 .build();

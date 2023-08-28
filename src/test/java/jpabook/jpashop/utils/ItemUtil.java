@@ -10,7 +10,7 @@ public class ItemUtil {
                 .author(author)
                 .isbn(isbn)
                 .price(10000)
-                .stackQuantity(10)
+                .stockQuantity(10)
                 .build();
     }
 }

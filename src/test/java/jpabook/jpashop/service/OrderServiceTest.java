@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class OrderServiceTest {
 
@@ -35,7 +36,6 @@ class OrderServiceTest {
     @Autowired
     private ItemRepository itemRepository;
 
-    @Transactional
     @DisplayName("상품 주문")
     @Test
     void whenOrderItems_thenFoundAndStockConsumed() {
@@ -49,14 +49,14 @@ class OrderServiceTest {
                 ItemUtil.newBook("순전한 기독교", "C. S. 루이스", "1236")
         );
         List<Integer> stockQuantitiesOriginal = books.stream()
-                .map(Item::getStackQuantity)
+                .map(Item::getStockQuantity)
                 .collect(Collectors.toList());
         books.forEach(itemRepository::save);
+
         List<Long> itemIds = books.stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
         List<Integer> quantities = List.of(2, 3, 1);
-
         OrderRequestDTO dto = new OrderRequestDTO(member.getId(), itemIds, quantities);
 
         // when
@@ -78,7 +78,7 @@ class OrderServiceTest {
                     Item item = orderItem.getItem();
                     assertThat(item).isSameAs(books.get(i));
                     assertThat(orderItem.getQuantity()).isEqualTo(quantities.get(i));
-                    assertThat(stockQuantitiesOriginal.get(i)).isEqualTo(item.getStackQuantity() + orderItem.getQuantity());
+                    assertThat(stockQuantitiesOriginal.get(i)).isEqualTo(item.getStockQuantity() + orderItem.getQuantity());
                 });
     }
 }

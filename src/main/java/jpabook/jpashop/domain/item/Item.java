@@ -27,7 +27,7 @@ public abstract class Item {
 
     private String name;
     private Integer price;
-    private Integer stackQuantity;
+    private Integer stockQuantity;
 
     @Builder.Default
     @ManyToMany(mappedBy = "items")
@@ -43,14 +43,14 @@ public abstract class Item {
     protected void updateBase(ItemUpdateDTO dto) {
         name = dto.getName();
         price = dto.getPrice();
-        stackQuantity = dto.getStackQuantity();
+        stockQuantity = dto.getStackQuantity();
     }
 
     public void consumeStock(int quantity) {
-        int newStockQuantity = stackQuantity - quantity;
+        int newStockQuantity = stockQuantity - quantity;
         if (newStockQuantity < 0) {
             throw new NotEnoughItemStock();
         }
-        stackQuantity = newStockQuantity;
+        stockQuantity = newStockQuantity;
     }
 }
