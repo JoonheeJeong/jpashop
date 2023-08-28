@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
+import jpabook.jpashop.exception.NotEnoughItemStock;
 import jpabook.jpashop.service.ItemUpdateDTO;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,5 +44,13 @@ public abstract class Item {
         name = dto.getName();
         price = dto.getPrice();
         stackQuantity = dto.getStackQuantity();
+    }
+
+    public void consumeStock(int quantity) {
+        int newStockQuantity = stackQuantity - quantity;
+        if (newStockQuantity < 0) {
+            throw new NotEnoughItemStock();
+        }
+        stackQuantity = newStockQuantity;
     }
 }
