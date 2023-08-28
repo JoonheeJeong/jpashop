@@ -11,5 +11,5 @@ public interface OrderRepository {
 
     Optional<Order> findById(Long id);
 
-    List<Order> findAll();
+    List<Order> findAllByLikeNameAndStatus(OrderSearchCond cond);
 }
